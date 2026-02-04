@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { projects } from '@/data/projects';
 import { useIsGestureEnabled } from '@/stores/gestureStore';
+import { useSelectedProjectId, useProjectStore } from '@/stores/projectStore';
 import type { Project } from '@/types/portfolio.types';
 
 function ProjectModal({
@@ -98,6 +99,23 @@ function ProjectModal({
 export function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const isGestureEnabled = useIsGestureEnabled();
+  const selectedProjectId = useSelectedProjectId();
+  const setSelectedProjectId = useProjectStore((s) => s.setSelectedProjectId);
+
+  // Listen for project selection from 3D scene (desktop)
+  useEffect(() => {
+    if (selectedProjectId) {
+      const project = projects.find((p) => p.id === selectedProjectId);
+      if (project) {
+        setSelectedProject(project);
+      }
+    }
+  }, [selectedProjectId]);
+
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+    setSelectedProjectId(null);
+  };
 
   return (
     <section
@@ -121,8 +139,8 @@ export function ProjectsSection() {
         )}
       </motion.div>
 
-      {/* Mobile/fallback project cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto lg:hidden">
+      {/* Project cards - mobile only, desktop uses 3D scene */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto lg:hidden">
         {projects.map((project, index) => (
           <motion.div
             key={project.id}
@@ -191,16 +209,11 @@ export function ProjectsSection() {
         ))}
       </div>
 
-      {/* Desktop: 3D scene handles display, this is just for accessibility */}
-      <div className="hidden lg:block text-center text-gray-600 text-sm">
-        <p>Navigate the 3D carousel with mouse or arrow keys</p>
-      </div>
-
       <AnimatePresence>
         {selectedProject && (
           <ProjectModal
             project={selectedProject}
-            onClose={() => setSelectedProject(null)}
+            onClose={handleCloseModal}
           />
         )}
       </AnimatePresence>

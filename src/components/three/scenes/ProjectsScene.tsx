@@ -6,17 +6,16 @@ import * as THREE from 'three';
 import { projects } from '@/data/projects';
 import { ProjectCard3D } from '../objects/ProjectCard3D';
 import { useSwipeDirection } from '@/stores/gestureStore';
+import { useNavigationStore, useActiveSection } from '@/stores/navigationStore';
 
-interface ProjectsSceneProps {
-  onProjectSelect?: (projectId: string) => void;
-}
-
-export function ProjectsScene({ onProjectSelect }: ProjectsSceneProps) {
+export function ProjectsScene() {
   const groupRef = useRef<THREE.Group>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const targetRotation = useRef(0);
 
   const swipeDirection = useSwipeDirection();
+  const navigateToSection = useNavigationStore((s) => s.navigateToSection);
+  const activeSection = useActiveSection();
 
   // Handle swipe navigation
   useEffect(() => {
@@ -30,18 +29,26 @@ export function ProjectsScene({ onProjectSelect }: ProjectsSceneProps) {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') {
-        setActiveIndex((prev) => Math.min(prev + 1, projects.length - 1));
-      } else if (e.key === 'ArrowLeft') {
-        setActiveIndex((prev) => Math.max(prev - 1, 0));
-      } else if (e.key === 'Enter' && onProjectSelect) {
-        onProjectSelect(projects[activeIndex].id);
+      if (activeSection !== 'projects') return;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        if (activeIndex >= projects.length - 1) {
+          navigateToSection('skills');
+        } else {
+          setActiveIndex((prev) => Math.min(prev + 1, projects.length - 1));
+        }
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        if (activeIndex <= 0) {
+          navigateToSection('hero');
+        } else {
+          setActiveIndex((prev) => Math.max(prev - 1, 0));
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeIndex, onProjectSelect]);
+  }, [activeIndex, activeSection, navigateToSection]);
 
   useFrame(() => {
     if (!groupRef.current) return;
@@ -59,11 +66,8 @@ export function ProjectsScene({ onProjectSelect }: ProjectsSceneProps) {
   });
 
   const handleProjectClick = (index: number) => {
-    if (index === activeIndex && onProjectSelect) {
-      onProjectSelect(projects[index].id);
-    } else {
-      setActiveIndex(index);
-    }
+    // Always rotate the clicked card to front
+    setActiveIndex(index);
   };
 
   // Arrange cards in a circular pattern

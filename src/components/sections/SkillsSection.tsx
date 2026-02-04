@@ -79,10 +79,6 @@ export function SkillsSection() {
         ))}
       </div>
 
-      {/* Desktop: 3D scene handles display */}
-      <div className="hidden lg:block text-center text-gray-600 text-sm">
-        <p>Explore skills in the 3D space</p>
-      </div>
     </section>
   );
 }

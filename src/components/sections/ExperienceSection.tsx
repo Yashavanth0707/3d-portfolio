@@ -29,8 +29,8 @@ export function ExperienceSection() {
         )}
       </motion.div>
 
-      {/* Mobile/fallback timeline */}
-      <div className="lg:hidden max-w-2xl mx-auto">
+      {/* Timeline - mobile only, desktop uses 3D scene */}
+      <div className="max-w-2xl mx-auto lg:hidden">
         <div className="relative">
           {/* Timeline line */}
           <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gradient-to-b from-purple-500 via-cyan-500 to-pink-500" />
@@ -85,10 +85,6 @@ export function ExperienceSection() {
         </div>
       </div>
 
-      {/* Desktop: 3D scene handles display */}
-      <div className="hidden lg:block text-center text-gray-600 text-sm">
-        <p>Navigate the 3D timeline with arrow keys or scroll</p>
-      </div>
     </section>
   );
 }

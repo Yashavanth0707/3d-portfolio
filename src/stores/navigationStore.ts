@@ -1,7 +1,14 @@
 'use client';
 
 import { create } from 'zustand';
+import gsap from 'gsap';
+import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import type { Section } from '@/types/portfolio.types';
+
+// Register GSAP plugin
+if (typeof window !== 'undefined') {
+  gsap.registerPlugin(ScrollToPlugin);
+}
 
 interface NavigationStore {
   activeSection: Section;
@@ -30,10 +37,15 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
 
     const element = document.getElementById(section);
     if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
+      gsap.to(window, {
+        duration: 1,
+        scrollTo: { y: element, offsetY: 0 },
+        ease: 'power2.inOut',
+        onComplete: () => set({ isTransitioning: false }),
+      });
+    } else {
+      setTimeout(() => set({ isTransitioning: false }), 1000);
     }
-
-    setTimeout(() => set({ isTransitioning: false }), 1000);
   },
 
   nextSection: () => {

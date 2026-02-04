@@ -7,6 +7,7 @@ import * as THREE from 'three';
 import { experiences } from '@/data/experience';
 import { TimelineNode } from '../objects/TimelineNode';
 import { useHandPosition, useIsGestureEnabled } from '@/stores/gestureStore';
+import { useNavigationStore, useActiveSection } from '@/stores/navigationStore';
 
 export function TimelineScene() {
   const groupRef = useRef<THREE.Group>(null);
@@ -15,55 +16,43 @@ export function TimelineScene() {
 
   const handPosition = useHandPosition();
   const isGestureEnabled = useIsGestureEnabled();
-
-  // Update progress based on scroll or hand position
-  useEffect(() => {
-    const handleScroll = () => {
-      if (!isGestureEnabled) {
-        const section = document.getElementById('experience');
-        if (section) {
-          const rect = section.getBoundingClientRect();
-          const sectionProgress = Math.max(
-            0,
-            Math.min(1, -rect.top / (rect.height - window.innerHeight))
-          );
-          setProgress(sectionProgress);
-        }
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, [isGestureEnabled]);
+  const navigateToSection = useNavigationStore((s) => s.navigateToSection);
+  const activeSection = useActiveSection();
 
   // Use hand Y position for timeline progress in gesture mode
   useEffect(() => {
     if (isGestureEnabled && handPosition) {
       setProgress(handPosition.y);
+      const index = Math.floor(handPosition.y * experiences.length);
+      setActiveIndex(Math.min(index, experiences.length - 1));
     }
   }, [isGestureEnabled, handPosition]);
-
-  // Update active index based on progress
-  useEffect(() => {
-    const index = Math.floor(progress * experiences.length);
-    setActiveIndex(Math.min(index, experiences.length - 1));
-  }, [progress]);
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (activeSection !== 'experience') return;
+
       if (e.key === 'ArrowDown') {
-        setActiveIndex((prev) => Math.min(prev + 1, experiences.length - 1));
-        setProgress((prev) => Math.min(prev + 0.25, 1));
+        if (activeIndex >= experiences.length - 1) {
+          navigateToSection('contact');
+        } else {
+          setActiveIndex((prev) => Math.min(prev + 1, experiences.length - 1));
+          setProgress((prev) => Math.min(prev + 1 / experiences.length, 1));
+        }
       } else if (e.key === 'ArrowUp') {
-        setActiveIndex((prev) => Math.max(prev - 1, 0));
-        setProgress((prev) => Math.max(prev - 0.25, 0));
+        if (activeIndex <= 0) {
+          navigateToSection('skills');
+        } else {
+          setActiveIndex((prev) => Math.max(prev - 1, 0));
+          setProgress((prev) => Math.max(prev - 1 / experiences.length, 0));
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+  }, [activeIndex, activeSection, navigateToSection]);
 
   useFrame(() => {
     if (!groupRef.current) return;
