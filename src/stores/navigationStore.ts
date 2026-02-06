@@ -33,18 +33,19 @@ export const useNavigationStore = create<NavigationStore>((set, get) => ({
   setScrollProgress: (progress) => set({ scrollProgress: progress }),
 
   navigateToSection: (section) => {
+    gsap.killTweensOf(window);
     set({ isTransitioning: true, activeSection: section });
 
     const element = document.getElementById(section);
     if (element) {
       gsap.to(window, {
-        duration: 1,
+        duration: 0.5,
         scrollTo: { y: element, offsetY: 0 },
-        ease: 'power2.inOut',
+        ease: 'power3.out',
         onComplete: () => set({ isTransitioning: false }),
       });
     } else {
-      setTimeout(() => set({ isTransitioning: false }), 1000);
+      set({ isTransitioning: false });
     }
   },
 

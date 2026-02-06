@@ -15,24 +15,29 @@ export default function Home() {
   const setActiveSection = useNavigationStore((s) => s.setActiveSection);
 
   // Intersection Observer for section tracking
+  // Skip 'projects' on desktop since ScrollTrigger handles it
   useEffect(() => {
     const observers: IntersectionObserver[] = [];
+    const isDesktop = window.matchMedia('(min-width: 1024px)').matches;
 
     sectionIds.forEach((id) => {
+      // Projects section is managed by its own ScrollTrigger on desktop
+      if (isDesktop && id === 'projects') return;
+
       const element = document.getElementById(id);
       if (!element) return;
 
       const observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
-            if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+            if (entry.isIntersecting && entry.intersectionRatio > 0.3) {
               setActiveSection(id);
             }
           });
         },
         {
-          threshold: 0.5,
-          rootMargin: '-10% 0px -10% 0px',
+          threshold: 0.3,
+          rootMargin: '0px 0px 0px 0px',
         }
       );
 

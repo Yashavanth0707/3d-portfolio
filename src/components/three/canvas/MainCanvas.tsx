@@ -1,26 +1,73 @@
 'use client';
 
-import { Suspense, useEffect, useState } from 'react';
-import { Canvas } from '@react-three/fiber';
+import { Suspense, useEffect, useRef, useState } from 'react';
+import { Canvas, useFrame } from '@react-three/fiber';
 import { Preload, PerformanceMonitor } from '@react-three/drei';
+import * as THREE from 'three';
 import { usePerformanceStore } from '@/stores/performanceStore';
 import { useActiveSection } from '@/stores/navigationStore';
 import { GestureCamera } from '../camera/GestureCamera';
 import { HeroScene } from '../scenes/HeroScene';
-import { ProjectsScene } from '../scenes/ProjectsScene';
+import { ProjectsBgScene } from '../scenes/ProjectsBgScene';
 import { SkillsScene } from '../scenes/SkillsScene';
 import { TimelineScene } from '../scenes/TimelineScene';
 import { PostProcessing } from '../effects/PostProcessing';
 
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)');
+    setIsDesktop(mql.matches);
+    const handler = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
+  return isDesktop;
+}
+
+// Wrapper that fades a scene in smoothly on mount
+function FadeScene({ children }: { children: React.ReactNode }) {
+  const groupRef = useRef<THREE.Group>(null);
+  const opacity = useRef(0);
+
+  useFrame((_, delta) => {
+    if (!groupRef.current) return;
+    // Fade in over ~0.4s
+    opacity.current = Math.min(opacity.current + delta * 2.5, 1);
+    groupRef.current.children.forEach((child) => {
+      child.traverse((obj) => {
+        if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
+          const mat = obj.material as THREE.Material;
+          if (mat && 'opacity' in mat) {
+            mat.opacity = (mat.userData.baseOpacity ?? mat.opacity) * opacity.current;
+            mat.userData.baseOpacity ??= mat.opacity / Math.max(opacity.current, 0.01);
+          }
+        }
+      });
+    });
+  });
+
+  return <group ref={groupRef}>{children}</group>;
+}
+
 function SceneManager() {
   const activeSection = useActiveSection();
+  const isDesktop = useIsDesktop();
 
   return (
     <>
-      {activeSection === 'hero' && <HeroScene />}
-      {activeSection === 'projects' && <ProjectsScene />}
-      {activeSection === 'skills' && <SkillsScene />}
-      {activeSection === 'experience' && <TimelineScene />}
+      {activeSection === 'hero' && (
+        <FadeScene key="hero"><HeroScene /></FadeScene>
+      )}
+      {isDesktop && activeSection === 'projects' && (
+        <FadeScene key="projects"><ProjectsBgScene /></FadeScene>
+      )}
+      {isDesktop && activeSection === 'skills' && (
+        <FadeScene key="skills"><SkillsScene /></FadeScene>
+      )}
+      {isDesktop && activeSection === 'experience' && (
+        <FadeScene key="experience"><TimelineScene /></FadeScene>
+      )}
     </>
   );
 }
