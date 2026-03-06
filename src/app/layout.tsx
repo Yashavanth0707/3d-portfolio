@@ -21,6 +21,7 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://yash-dev.in'),
   title: {
     default: 'Yashavantha H - Creative Developer Portfolio',
     template: '%s | Yashavantha H',
@@ -28,9 +29,11 @@ export const metadata: Metadata = {
   description:
     'Interactive 3D portfolio showcasing creative development projects, skills, and experience. Built with Next.js, Three.js, and MediaPipe gesture controls.',
   keywords: [
+    'Yashavantha H',
     'developer',
     'portfolio',
     'react',
+    'next.js',
     'three.js',
     'creative',
     'interactive',
@@ -38,20 +41,25 @@ export const metadata: Metadata = {
     'web developer',
     'frontend',
     'full stack',
+    'javascript',
+    'typescript',
   ],
-  authors: [{ name: 'Yashavantha H' }],
+  authors: [{ name: 'Yashavantha H', url: 'https://yash-dev.in' }],
   creator: 'Yashavantha H',
+  alternates: {
+    canonical: 'https://yash-dev.in',
+  },
   openGraph: {
     type: 'website',
     locale: 'en_US',
-    url: 'https://yashavanthah.dev',
+    url: 'https://yash-dev.in',
     title: 'Yashavantha H - Creative Developer Portfolio',
     description:
       'Interactive 3D portfolio with gesture controls. Explore projects, skills, and experience.',
     siteName: 'Yashavantha H Portfolio',
     images: [
       {
-        url: '/og-image.png',
+        url: 'https://yash-dev.in/og-image.png',
         width: 1200,
         height: 630,
         alt: 'Yashavantha H Portfolio Preview',
@@ -64,11 +72,18 @@ export const metadata: Metadata = {
     description:
       'Interactive 3D portfolio with gesture controls. Explore projects, skills, and experience.',
     creator: '@yashavanthah',
-    images: ['/og-image.png'],
+    images: ['https://yash-dev.in/og-image.png'],
   },
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
   icons: {
     icon: '/favicon.ico',
@@ -82,6 +97,47 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'Person',
+              name: 'Yashavantha H',
+              url: 'https://yash-dev.in',
+              jobTitle: 'Creative Developer',
+              description:
+                'Creative Developer building immersive digital experiences with code, creativity, and a touch of magic.',
+              sameAs: [],
+              knowsAbout: [
+                'React',
+                'Next.js',
+                'Three.js',
+                'TypeScript',
+                'JavaScript',
+                'Node.js',
+                'Web Development',
+                'Frontend Development',
+                'Full Stack Development',
+              ],
+            }),
+          }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              '@context': 'https://schema.org',
+              '@type': 'WebSite',
+              name: 'Yashavantha H Portfolio',
+              url: 'https://yash-dev.in',
+              description:
+                'Interactive 3D portfolio showcasing creative development projects, skills, and experience.',
+            }),
+          }}
+        />
+      </head>
       <body
         className={`${inter.variable} ${spaceGrotesk.variable} font-sans antialiased bg-[#0a0a0a] text-white overflow-x-hidden`}
       >

@@ -28,22 +28,26 @@ function useIsDesktop() {
 // Wrapper that fades a scene in smoothly on mount
 function FadeScene({ children }: { children: React.ReactNode }) {
   const groupRef = useRef<THREE.Group>(null);
-  const opacity = useRef(0);
+  const fadeProgress = useRef(0);
 
   useFrame((_, delta) => {
     if (!groupRef.current) return;
-    // Fade in over ~0.4s
-    opacity.current = Math.min(opacity.current + delta * 2.5, 1);
-    groupRef.current.children.forEach((child) => {
-      child.traverse((obj) => {
-        if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
-          const mat = obj.material as THREE.Material;
-          if (mat && 'opacity' in mat) {
-            mat.opacity = (mat.userData.baseOpacity ?? mat.opacity) * opacity.current;
-            mat.userData.baseOpacity ??= mat.opacity / Math.max(opacity.current, 0.01);
-          }
+    if (fadeProgress.current >= 1) return;
+
+    fadeProgress.current = Math.min(fadeProgress.current + delta * 2.5, 1);
+    const t = fadeProgress.current;
+
+    groupRef.current.traverse((obj) => {
+      if (obj instanceof THREE.Mesh || obj instanceof THREE.Points) {
+        const mat = obj.material as THREE.Material & { opacity: number };
+        if (!mat || !('opacity' in mat)) return;
+
+        // Store original opacity BEFORE modifying
+        if (mat.userData.baseOpacity === undefined) {
+          mat.userData.baseOpacity = mat.opacity;
         }
-      });
+        mat.opacity = mat.userData.baseOpacity * t;
+      }
     });
   });
 
@@ -53,11 +57,21 @@ function FadeScene({ children }: { children: React.ReactNode }) {
 function SceneManager() {
   const activeSection = useActiveSection();
   const isDesktop = useIsDesktop();
+  const hasNavigated = useRef(false);
+
+  // Track if user has navigated away from hero
+  useEffect(() => {
+    if (activeSection !== 'hero') {
+      hasNavigated.current = true;
+    }
+  }, [activeSection]);
 
   return (
     <>
       {activeSection === 'hero' && (
-        <FadeScene key="hero"><HeroScene /></FadeScene>
+        hasNavigated.current
+          ? <FadeScene key={`hero-fade`}><HeroScene /></FadeScene>
+          : <HeroScene />
       )}
       {isDesktop && activeSection === 'projects' && (
         <FadeScene key="projects"><ProjectsBgScene /></FadeScene>

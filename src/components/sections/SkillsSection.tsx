@@ -52,14 +52,25 @@ export function SkillsSection() {
               {categorySkills.map((skill, index) => (
                 <motion.div
                   key={skill.id}
-                  className="bg-[#1a1a2e] rounded-xl p-4 text-center"
+                  className="bg-[#1a1a2e] rounded-xl p-4 text-center border border-transparent"
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ delay: index * 0.05 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{
+                    scale: 1.05,
+                    borderColor: skill.color + '40',
+                    boxShadow: `0 0 20px ${skill.color}20`,
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  <div className="text-3xl mb-2">{skill.icon}</div>
+                  <motion.div
+                    className="text-3xl mb-2"
+                    whileHover={{ scale: 1.2, rotate: 5 }}
+                    transition={{ type: 'spring', stiffness: 300 }}
+                  >
+                    {skill.icon}
+                  </motion.div>
                   <h4 className="text-white font-medium mb-2">{skill.name}</h4>
                   <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
                     <motion.div

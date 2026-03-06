@@ -54,18 +54,22 @@ export function HeroSection() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 1 }}
         >
-          <button
+          <motion.button
             onClick={() => navigateToSection('projects')}
-            className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-medium transition-colors"
+            className="px-8 py-3 bg-purple-600 hover:bg-purple-700 text-white rounded-full font-medium transition-colors shadow-lg shadow-purple-500/25"
+            whileHover={{ scale: 1.05, boxShadow: '0 0 25px rgba(168, 85, 247, 0.4)' }}
+            whileTap={{ scale: 0.95 }}
           >
             View Projects
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={() => navigateToSection('contact')}
             className="px-8 py-3 border border-gray-600 hover:border-purple-500 text-white rounded-full font-medium transition-colors"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
           >
             Get in Touch
-          </button>
+          </motion.button>
         </motion.div>
 
         {isGestureEnabled && (

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigationStore, useActiveSection } from '@/stores/navigationStore';
 import { GestureIndicator } from './GestureIndicator';
@@ -16,8 +16,15 @@ const navItems: { id: Section; label: string }[] = [
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const navigateToSection = useNavigationStore((s) => s.navigateToSection);
   const activeSection = useActiveSection();
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleNavClick = (section: Section) => {
     navigateToSection(section);
@@ -25,7 +32,14 @@ export function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-40">
+    <motion.header
+      className={`fixed top-0 left-0 right-0 z-40 transition-all duration-300 ${
+        scrolled ? 'bg-[#0a0a0a]/80 backdrop-blur-md' : ''
+      }`}
+      initial={{ y: -100 }}
+      animate={{ y: 0 }}
+      transition={{ duration: 0.5, ease: 'easeOut' }}
+    >
       <nav className="mx-auto max-w-7xl px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Logo */}
@@ -47,14 +61,22 @@ export function Header() {
               <motion.button
                 key={item.id}
                 onClick={() => handleNavClick(item.id)}
-                className={`text-sm transition-colors ${
+                className={`relative text-sm transition-colors ${
                   activeSection === item.id
                     ? 'text-purple-400'
                     : 'text-gray-400 hover:text-white'
                 }`}
                 whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.95 }}
               >
                 {item.label}
+                {activeSection === item.id && (
+                  <motion.div
+                    className="absolute -bottom-1 left-0 right-0 h-0.5 bg-purple-500 rounded-full"
+                    layoutId="activeNav"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                )}
               </motion.button>
             ))}
             <GestureIndicator />
@@ -122,6 +144,6 @@ export function Header() {
           )}
         </AnimatePresence>
       </nav>
-    </header>
+    </motion.header>
   );
 }
