@@ -63,10 +63,11 @@ function ProjectModal({
           </svg>
         </button>
 
-        <div
-          className="w-full h-48 rounded-lg mb-6"
-          style={{ backgroundColor: project.color + '20' }}
-        />
+        <div className="w-full h-48 rounded-lg mb-6 overflow-hidden" style={{ backgroundColor: project.color + '20' }}>
+          {project.image && (
+            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+          )}
+        </div>
 
         <h2 id="project-modal-title" className="text-2xl font-bold text-white mb-2">{project.title}</h2>
         <p className="text-gray-400 mb-6">{project.longDescription}</p>
@@ -205,11 +206,12 @@ function DesktopProjects() {
             />
 
             <div className="flex gap-8">
-              {/* Left: project image placeholder */}
-              <div
-                className="w-64 h-44 rounded-xl flex-shrink-0"
-                style={{ backgroundColor: project.color + '15' }}
-              />
+              {/* Left: project image */}
+              <div className="w-64 h-44 rounded-xl flex-shrink-0 overflow-hidden" style={{ backgroundColor: project.color + '15' }}>
+                {project.image && (
+                  <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                )}
+              </div>
 
               {/* Right: project info */}
               <div className="flex-1 flex flex-col">
@@ -307,10 +309,11 @@ export function ProjectsSection() {
               transition={{ delay: index * 0.1 }}
               onClick={() => setSelectedProject(project)}
             >
-              <div
-                className="w-full h-32 rounded-lg mb-4"
-                style={{ backgroundColor: project.color + '20' }}
-              />
+              <div className="w-full h-32 rounded-lg mb-4 overflow-hidden" style={{ backgroundColor: project.color + '20' }}>
+                {project.image && (
+                  <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                )}
+              </div>
               <h3 className="text-lg font-semibold text-white mb-2">{project.title}</h3>
               <p className="text-gray-400 text-sm mb-4">{project.description}</p>
               <div className="flex flex-wrap gap-2 mb-4">

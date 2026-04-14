@@ -19,15 +19,18 @@ export function ContactSection() {
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/contact', {
+      const response = await fetch('https://api.web3forms.com/submit', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          access_key: '9f7b4d1d-6f8f-42b8-aaa4-c0155ddd1b53',
+          ...formData,
+        }),
       });
 
-      if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || 'Failed to send message');
+      const data = await response.json();
+      if (!data.success) {
+        throw new Error(data.message || 'Failed to send message');
       }
 
       setStatus('success');
@@ -161,7 +164,7 @@ export function ContactSection() {
         transition={{ delay: 0.4 }}
       >
         <motion.a
-          href="https://github.com"
+          href="https://github.com/Yashavanth0707/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
@@ -174,7 +177,7 @@ export function ContactSection() {
           </svg>
         </motion.a>
         <motion.a
-          href="https://linkedin.com"
+          href="https://www.linkedin.com/in/yashavantha-h-5552a3268/"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"
@@ -187,7 +190,7 @@ export function ContactSection() {
           </svg>
         </motion.a>
         <motion.a
-          href="https://twitter.com"
+          href="https://x.com/Yash0707H"
           target="_blank"
           rel="noopener noreferrer"
           className="text-gray-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/5"

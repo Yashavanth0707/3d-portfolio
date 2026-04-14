@@ -3,18 +3,17 @@ import type { Experience } from "@/types/portfolio.types";
 export const experiences: Experience[] = [
   {
     id: "exp-1",
-    title: "Senior Frontend Developer",
-    company: "Tech Innovations Inc.",
-    location: "San Francisco, CA",
-    startDate: "2022-03",
+    title: "Software Engineer 1",
+    company: "GsTech Pvt Ltd",
+    location: "",
+    startDate: "2023-08",
     endDate: null,
     description: [
-      "Lead development of customer-facing web applications using React and Next.js",
-      "Implemented 3D product visualization features using Three.js",
-      "Mentored junior developers and established coding standards",
-      "Reduced bundle size by 40% through code splitting and lazy loading",
+      "Building and maintaining web and desktop applications using React, Next.js, and Electron.js",
+      "Developed RESTful APIs and backend services using Node.js and Express.js",
+      "Worked across the full stack with JavaScript and TypeScript on multiple product lines",
     ],
-    technologies: ["React", "Next.js", "Three.js", "TypeScript", "GraphQL"],
+    technologies: ["React", "JavaScript", "Next.js", "Node.js", "Electron.js", "TypeScript", "Express.js"],
   },
   // {
   //   id: 'exp-2',
